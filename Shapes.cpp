@@ -97,7 +97,7 @@ Sphere::Sphere(Vec _center, float _radius, Color _color)
 {
 	center = _center;
 	radius = _radius;
-	c =      _color;
+	c      = _color;
 }
 void Sphere::test(Ray& ray, HitData& hit)
 {
@@ -158,8 +158,8 @@ void Sphere::test(Ray& ray, HitData& hit)
 			{
 				Vec r = ray.o + ray.d*t2;
 				//add data
-				hit.t          =         t2;
-				hit.color      =     c;
+				hit.t          = t2;
+				hit.color      = c;
 				hit.lastShape  = this;
 				hit.lastNormal = normal(r);
 			}
@@ -181,7 +181,7 @@ Triangle::Triangle(Vec _p1, Vec _p2, Vec _p3, Color _color)
 	p0 = _p1;
 	p1 = _p2;
 	p2 = _p3;
-	c = _color;
+	c  = _color;
 
 	Vec v1 = p0 - p1;
 	Vec v2 = p0 - p2;
@@ -225,9 +225,9 @@ void Triangle::test(Ray& ray, HitData& hit)
 
 	if (tFloat < hit.t || hit.t == -1)
 	{
-		hit.t = tFloat;
-		hit.color = c;
-		hit.lastShape = this;
+		hit.t          = tFloat;
+		hit.color      = c;
+		hit.lastShape  = this;
 		hit.lastNormal = nor;
 	}
 }
@@ -322,8 +322,8 @@ void OBB::test(Ray& ray, HitData& hit)
 	f = Bw.Dot(ray.d);
 	if (fabs(f) > 0.000001)
 	{
-		float t1 = (e + halfBv) / f;
-		float t2 = (e - halfBv) / f;
+		float t1 = (e + halfBw) / f;
+		float t2 = (e - halfBw) / f;
 
 		if (t1 > t2)
 		{
