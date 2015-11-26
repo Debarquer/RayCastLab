@@ -1,12 +1,11 @@
-﻿Build started 16/11/2015 15:47:52.
+﻿Build started 26/11/2015 09:52:54.
      1>Project "C:\Users\Simonekis\Documents\Visual Studio 2015\Projects\RayCastLab\RayCastLab.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /FR"Debug\\" /Gd /TP /analyze- /errorReport:prompt Shapes.cpp
          Shapes.cpp
-     1>Shapes.cpp(45): warning C4244: 'argument': conversion from 'float' to 'BYTE', possible loss of data
-     1>Shapes.cpp(58): warning C4244: 'argument': conversion from 'float' to 'BYTE', possible loss of data
-     1>Shapes.cpp(206): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-     1>c:\users\simonekis\documents\visual studio 2015\projects\raycastlab\shapes.cpp(396): warning C4715: 'OBB::normal': not all control paths return a value
+     1>Shapes.cpp(41): warning C4244: 'argument': conversion from 'float' to 'BYTE', possible loss of data
+     1>Shapes.cpp(201): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+     1>c:\users\simonekis\documents\visual studio 2015\projects\raycastlab\shapes.cpp(407): warning C4715: 'OBB::normal': not all control paths return a value
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Simonekis\Documents\Visual Studio 2015\Projects\RayCastLab\Debug\RayCastLab.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Simonekis\Documents\Visual Studio 2015\Projects\RayCastLab\Debug\RayCastLab.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Simonekis\Documents\Visual Studio 2015\Projects\RayCastLab\Debug\RayCastLab.lib" /MACHINE:X86 /LTCG Debug\Scene.obj
          Debug\main.obj
@@ -22,4 +21,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.55
+Time Elapsed 00:00:05.17

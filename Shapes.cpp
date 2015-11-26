@@ -8,55 +8,37 @@ void cross(Vec& dest, Vec v1, Vec v2)
 	dest.z = v1.x * v2.y - v1.y * v2.x;
 }
 
-void sub(Vec& dest, Vec v1, Vec v2)
-{
-	dest.x = v1.x - v2.x;
-	dest.y = v1.y - v2.y;
-	dest.z = v1.z - v2.z;
-}
-
 Color genericShade(Vec& light, const Vec& cam, Ray& r, HitData& h)
 {
 	Color finalColor;
 
-	//get the two normalized vectors
+	//get the two vectors
 	Vec normalN = h.lastNormal;
-	Vec lightN = light - (r.o + (r.d * h.t));
+	Vec lightN = light - (r.o + (r.d * h.t)); //a vector between the point the camera ray hit and the light source
 
 	//Normalize them
 	lightN.Normalize();
 	normalN.Normalize();
 
-	//Calulcuttalate the angle
+	//Calculate the angle between the point and the light
 	float angle = lightN.Dot(normalN);
 
-	//Check if the angle is acceptable
-	if (angle > 0)
-	{
-		float red   = h.color.r * angle + (50.0f / 255.0f) * h.color.r;
-		float green = h.color.g * angle + (50.0f / 255.0f) * h.color.g;
-		float blue  = h.color.b * angle + (50.0f / 255.0f) * h.color.b;
-		if (red > 255)
-			red = 255;
-		if (green > 255)
-			green = 255;
-		if (blue > 255)
-			blue = 255;
-		finalColor = Color(red, green, blue);
-	}
-	else if (angle < 0)
-	{
-		float red   = (50.0f / 255.0f) * h.color.r;
-		float green = (50.0f / 255.0f) * h.color.g;
-		float blue  = (50.0f / 255.0f) * h.color.b;
-		if (red > 255)
-			red = 255;
-		if (green > 255)
-			green = 255;
-		if (blue > 255)
-			blue = 255;
-		finalColor = Color(red, green, blue);
-	}
+	if (angle < 0)
+		angle = 0;
+
+	float red   = h.color.r * angle + (50.0f / 255.0f) * h.color.r;
+	float green = h.color.g * angle + (50.0f / 255.0f) * h.color.g;
+	float blue  = h.color.b * angle + (50.0f / 255.0f) * h.color.b;
+
+	//Check the light intensity
+	if (red > 255)
+		red = 255;
+	if (green > 255)
+		green = 255;
+	if (blue > 255)
+		blue = 255;
+
+	finalColor = Color(red, green, blue);
 
 	return finalColor;
 }
@@ -75,7 +57,8 @@ void Plane::test(Ray& ray, HitData& hit)
 	//intersects	
 	if (t > 0)
 	{
-		//Check if the intersection is closer to the monitor than the previously closest intersection (for that pixel)
+		//Check if the intersection is closer to the monitor than the previously closest intersection
+		//or if it is the first thing hit
 		if (t < hit.t || hit.t == -1)
 		{
 			hit.t = t;
@@ -108,14 +91,17 @@ void Sphere::test(Ray& ray, HitData& hit)
 	float test = b*b - center2;
 	if (test > 0)
 	{
-		float t1 = -b + sqrt(b*b - center2);
-		float t2 = -b - sqrt(b*b - center2);
-		//check for the closest one
+		//two different cases
+		float t1 = -b + sqrt(test);
+		float t2 = -b - sqrt(test);
+
+		//Unnecessary checks below because t1 will never be smaller than t2
 		if (t1 > 0 && t2 > 0)
 		{
 			if (t1 < t2)
 			{
-				//check if it is closer than the previously closest
+				//Check if the intersection is closer to the monitor than the previously closest intersection
+				//or if it is the first thing hit
 				if (t1 < hit.t || hit.t == -1)
 				{
 					Vec r = ray.o + ray.d*t1;
@@ -128,7 +114,8 @@ void Sphere::test(Ray& ray, HitData& hit)
 			}
 			else
 			{
-				//check if it is closer than the previously closest
+				//Check if the intersection is closer to the monitor than the previously closest intersection
+				//or if it is the first thing hit
 				if (t2 < hit.t || hit.t == -1)
 				{
 					Vec r = ray.o + ray.d*t2;
@@ -142,9 +129,12 @@ void Sphere::test(Ray& ray, HitData& hit)
 		}
 		else if (t1 > 0)
 		{
+			//Check if the intersection is closer to the monitor than the previously closest intersection
+			//or if it is the first thing hit
 			if (t1 < hit.t || hit.t == -1)
 			{
 				Vec r = ray.o + ray.d*t1;
+
 				//add data
 				hit.t          = t1;
 				hit.color      = c;
@@ -154,9 +144,12 @@ void Sphere::test(Ray& ray, HitData& hit)
 		}
 		else if (t2 > 0)
 		{
+			//Check if the intersection is closer to the monitor than the previously closest intersection
+			//or if it is the first thing hit
 			if (t2 < hit.t || hit.t == -1)
 			{
 				Vec r = ray.o + ray.d*t2;
+
 				//add data
 				hit.t          = t2;
 				hit.color      = c;
@@ -191,8 +184,7 @@ void Triangle::test(Ray& ray, HitData& hit)
 {
 	Vec p, q, t;
 
-	//sub(edge1, p1, p0);
-	//sub(edge2, p2, p0);
+	//Create vectors as edges using points in the triangle
 	edge1 = p1 - p0;
 	edge2 = p2 - p0;
 
@@ -200,12 +192,11 @@ void Triangle::test(Ray& ray, HitData& hit)
 
 	float det = edge1.Dot(p);
 
-	//Non culling
 	if (det > -0.000001 && det < 0.000001)
 		return;
+
 	float invDet = 1.0 / det;
 
-	//sub(t, ray.o, p0);
 	t = ray.o - p0;
 
 	float u = t.Dot(p) * invDet;
@@ -215,14 +206,18 @@ void Triangle::test(Ray& ray, HitData& hit)
 	cross(q, t, edge1);
 
 	float v = ray.d.Dot(q) * invDet;
+
 	if (v < 0.0 || v > 1.0)
 		return;
 
 	if (u + v > 1.0)
 		return;
 
+	//calculate the final hitpoint
 	float tFloat = edge2.Dot(q) * invDet;
 
+	//Check if the intersection is closer to the monitor than the previously closest intersection
+	//or if it is the first thing hit
 	if (tFloat < hit.t || hit.t == -1)
 	{
 		hit.t          = tFloat;
@@ -262,19 +257,24 @@ void OBB::test(Ray& ray, HitData& hit)
 	float min = -100000;
 	float max =  100000;
 
+	//create a vector between the center of the ray and the center of the OBB
 	Vec p = Bcenter - ray.o;
 
+	//normalize the vectors of the OBB
 	Bu.Normalize();
 	Bv.Normalize();
 	Bw.Normalize();
 
 	float e = Bu.Dot(p);
 	float f = Bu.Dot(ray.d);
+
 	if (fabs(f) > 0.000001)
 	{
+		//calculate two possible hit locations
 		float t1 = (e + halfBu) / f;
 		float t2 = (e - halfBu) / f;
 
+		//t1 should be the smaller one
 		if (t1 > t2)
 		{
 			float temp = t1;
@@ -290,6 +290,7 @@ void OBB::test(Ray& ray, HitData& hit)
 		if (max < 0)
 			return;
 	}
+	//check if the float is within acceptable ranges
 	else if (-e - halfBu > 0 || -e + halfBu < 0)
 		return;
 
@@ -345,6 +346,8 @@ void OBB::test(Ray& ray, HitData& hit)
 
 	if (min > 0)
 	{
+		//Check if the intersection is closer to the monitor than the previously closest intersection
+		//or if it is the first thing hit
 		if (min < hit.t || hit.t == -1)
 		{
 			hit.t = min;
@@ -357,6 +360,8 @@ void OBB::test(Ray& ray, HitData& hit)
 	}
 	else
 	{
+		//Check if the intersection is closer to the monitor than the previously closest intersection
+		//or if it is the first thing hit
 		if (max < hit.t || hit.t == -1)
 		{
 			hit.t = max;
@@ -370,6 +375,8 @@ void OBB::test(Ray& ray, HitData& hit)
 }
 Vec  OBB::normal(Vec& point)
 {
+	//These variables could be calculated in the constructor for increased performance
+
 	Vec normalFaces[6];
 	normalFaces[0] = Bu;
 	normalFaces[1] = Bu * -1;
@@ -390,7 +397,7 @@ Vec  OBB::normal(Vec& point)
 	for (int i = 0; i < 6; i++)
 	{
 		res = (point - pointsOnPlanes[i]).Dot(normalFaces[i]);
-		if (res > -0.000001 && res < 0.000001)
+		if (res > -0.0001 && res < 0.0001)
 			return normalFaces[i];
 	}
 }
